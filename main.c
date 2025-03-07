@@ -14,7 +14,8 @@
 static int32 mem[MEM_LENGTH];
 static uint16 vmem[VMEM_LENGTH];
 static int32 reg[REG_LENGTH];
-static int32 timer = 0, count;
+static int32 timer  = 0;
+static uint16 count = 0;
 
 static uint8 real_color(uint8 xm2_color) {
     switch(xm2_color) {
@@ -82,7 +83,7 @@ void entry(void) {
     draw();
     
     for(int pc = 0; pc < MEM_LENGTH; pc++, count++) {
-        if(count > 256) {
+        if(count > 500) {
             timer_reset();
             count = 0;
         }
@@ -282,7 +283,7 @@ void entry(void) {
             break;
         }
         
-        if(count >= 256) timer += 0xFFFF - timer_read();
+        if(count >= 500) timer += 0xFFFF - timer_read();
     }
 }
 
