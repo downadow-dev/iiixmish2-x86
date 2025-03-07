@@ -14,7 +14,7 @@
 static int32 mem[MEM_LENGTH];
 static uint16 vmem[VMEM_LENGTH];
 static int32 reg[REG_LENGTH];
-static int32 timer  = 0;
+static uint32 timer = 0;
 static uint16 count = 0;
 
 static uint8 real_color(uint8 xm2_color) {
@@ -130,7 +130,7 @@ void entry(void) {
                 get_key();
             delay_wait(reg[mem[pc - 1]] * SEC);
             timer += reg[mem[pc - 1]] * SEC;
-            count = 0;
+            timer_reset();
             continue;
         case -11: /* IFA */
             if(pc > 65535 && reg[mem[pc - 3]] < 65536)
@@ -199,7 +199,7 @@ void entry(void) {
                 get_key();
             delay_wait(reg[mem[pc - 1]] * (SEC / 1000));
             timer += reg[mem[pc - 1]] * (SEC / 1000);
-            count = 0;
+            timer_reset();
             continue;
         case -26: /* INC */
             if(mem[pc - 1] == 1)
@@ -250,12 +250,10 @@ void entry(void) {
             timer += 0xFFFF - timer_read();
             timer_reset();
             reg[mem[pc - 1]] = timer / (SEC / 1000);
-            count = 0;
             break;
         case -44: /* TRST */
             timer = 0;
             timer_reset();
-            count = 0;
             break;
         case -45: /* RISV */
             if(pc > 65535 && reg[mem[pc - 1]] < 65536)
