@@ -1,3 +1,8 @@
+/*
+  [03/07/25] changes for iiixmish2-x86
+  --downadow
+ */
+
 #ifndef __DELAY_H
 #define __DELAY_H
 
@@ -11,5 +16,8 @@
 // t in seconds.
 // x = 1193180 / t
 void delay_wait (uint32 x);
+
+void timer_reset(void);
+uint16 timer_read(void);
 
 #endif

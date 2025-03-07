@@ -14,7 +14,7 @@
 static int32 mem[MEM_LENGTH];
 static uint16 vmem[VMEM_LENGTH];
 static int32 reg[REG_LENGTH];
-static int32 counter = 0;
+static int32 timer = 0, count;
 
 static uint8 real_color(uint8 xm2_color) {
     switch(xm2_color) {
@@ -70,15 +70,23 @@ static void draw(void) {
 
 void entry(void) {
     for(int i = 0; i < MEM_LENGTH; i++) {
-        if(i < VMEM_LENGTH) vmem[i] = 0;
+        if(i < VMEM_LENGTH - 2) vmem[i] = 0;
         if(i < REG_LENGTH)  reg[i] = 0;
         mem[i] = (i < sizeof(program)) ? program[i] : 0;
     }
     
+    vmem[1999] = 1;
+    vmem[1998] = 0;
+    
     video_hidecursor();
     draw();
     
-    for(int pc = 0; pc < MEM_LENGTH; pc++, counter++) {
+    for(int pc = 0; pc < MEM_LENGTH; pc++, count++) {
+        if(count > 256) {
+            timer_reset();
+            count = 0;
+        }
+        
         switch(mem[pc]) {
         case -2: /* ADD */
             if(mem[pc - 2] == 1 || mem[pc - 3] == 1)
@@ -120,8 +128,9 @@ void entry(void) {
             if(mem[pc - 1] == 1)
                 get_key();
             delay_wait(reg[mem[pc - 1]] * SEC);
-            counter += reg[mem[pc - 1]] * SEC;
-            break;
+            timer += reg[mem[pc - 1]] * SEC;
+            count = 0;
+            continue;
         case -11: /* IFA */
             if(pc > 65535 && reg[mem[pc - 3]] < 65536)
                 break; /* code protection */
@@ -188,8 +197,9 @@ void entry(void) {
             if(mem[pc - 1] == 1)
                 get_key();
             delay_wait(reg[mem[pc - 1]] * (SEC / 1000));
-            counter += reg[mem[pc - 1]] * (SEC / 1000);
-            break;
+            timer += reg[mem[pc - 1]] * (SEC / 1000);
+            count = 0;
+            continue;
         case -26: /* INC */
             if(mem[pc - 1] == 1)
                 get_key();
@@ -236,10 +246,15 @@ void entry(void) {
             reg[mem[pc - 1]] = reg[mem[pc - 2]] & reg[mem[pc - 3]];
             break;
         case -43: /* TIME */
-            reg[mem[pc - 1]] = counter;
+            timer += 0xFFFF - timer_read();
+            timer_reset();
+            reg[mem[pc - 1]] = timer / (SEC / 1000);
+            count = 0;
             break;
         case -44: /* TRST */
-            counter = 0;
+            timer = 0;
+            timer_reset();
+            count = 0;
             break;
         case -45: /* RISV */
             if(pc > 65535 && reg[mem[pc - 1]] < 65536)
@@ -266,6 +281,8 @@ void entry(void) {
             reg[mem[pc - 1]] = vmem[reg[mem[pc - 2]]];
             break;
         }
+        
+        if(count >= 256) timer += 0xFFFF - timer_read();
     }
 }
 
