@@ -14,8 +14,7 @@
 static int32 mem[MEM_LENGTH];
 static uint16 vmem[VMEM_LENGTH];
 static int32 reg[REG_LENGTH];
-static uint32 timer = 0;
-static uint16 count = 0;
+static uint32 timer = 0, count = 0;
 
 static uint8 real_color(uint8 xm2_color) {
     switch(xm2_color) {
@@ -83,7 +82,9 @@ void entry(void) {
     draw();
     
     for(int pc = 0; pc < MEM_LENGTH; pc++, count++) {
-        if(count > 500) {
+        if(count > 1000000) {
+            delay_wait(50 * (SEC / 1000));
+            timer += 50 * (SEC / 1000);
             timer_reset();
             count = 0;
         }
@@ -126,6 +127,7 @@ void entry(void) {
             vmem[mem[pc - 1]] = reg[mem[pc - 2]];
             break;
         case -10: /* SLP */
+            timer += 0xFFFF - timer_read();
             if(mem[pc - 1] == 1)
                 get_key();
             delay_wait(reg[mem[pc - 1]] * SEC);
@@ -195,6 +197,7 @@ void entry(void) {
             reg[mem[pc - 1]] = reg[mem[pc - 2]] / reg[mem[pc - 3]];
             break;
         case -23: /* LSLP */
+            timer += 0xFFFF - timer_read();
             if(mem[pc - 1] == 1)
                 get_key();
             delay_wait(reg[mem[pc - 1]] * (SEC / 1000));
@@ -248,6 +251,8 @@ void entry(void) {
             break;
         case -43: /* TIME */
             timer += 0xFFFF - timer_read();
+            delay_wait(50 * (SEC / 1000));
+            timer += 50 * (SEC / 1000);
             timer_reset();
             reg[mem[pc - 1]] = timer / (SEC / 1000);
             break;
@@ -281,7 +286,7 @@ void entry(void) {
             break;
         }
         
-        if(count >= 500) timer += 0xFFFF - timer_read();
+        if(count >= 1000000) timer += 0xFFFF - timer_read();
     }
 }
 
