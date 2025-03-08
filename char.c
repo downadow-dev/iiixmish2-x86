@@ -1,6 +1,6 @@
 /* author: downadow */
 
-#include <types.h>
+#include "char.h"
 
 static bool shift = false;
 static bool ctrl  = false;
