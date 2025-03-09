@@ -250,15 +250,10 @@ void entry(void) {
             reg[mem[pc - 1]] = reg[mem[pc - 2]] & reg[mem[pc - 3]];
             break;
         case -43: /* TIME */
-            timer += 0xFFFF - timer_read();
-            delay_wait(50 * (SEC / 1000));
-            timer += 50 * (SEC / 1000);
-            timer_reset();
             reg[mem[pc - 1]] = timer / (SEC / 1000);
             break;
         case -44: /* TRST */
             timer = 0;
-            timer_reset();
             break;
         case -45: /* RISV */
             if(pc > 65535 && reg[mem[pc - 1]] < 65536)
