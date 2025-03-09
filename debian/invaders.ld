@@ -2,6 +2,7 @@
  * Minimal linker script for GRUB Invaders.
  *
  * Copyright © 2020, Fabian Greffrath <fabian@debian.org>
+ * Copyright © 2025, downadow <downadow998@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,6 +10,8 @@
  * (at your option) any later version.
  *
  */
+
+/* [03/09/25] ``.text 64M``,      --downadow */
 
 PHDRS
 {
@@ -18,7 +21,7 @@ PHDRS
 
 SECTIONS
 {
-	.text 1M :
+	.text 64M :
 	{
 		*(.text*)
 		*(.rodata*)
