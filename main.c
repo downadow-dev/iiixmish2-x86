@@ -71,8 +71,8 @@ static void draw(void) {
 void entry(void) {
     for(int i = 0; i < MEM_LENGTH; i++) {
         if(i < VMEM_LENGTH - 2) vmem[i] = 0;
-        if(i < REG_LENGTH)  reg[i] = 0;
-        mem[i] = (i < sizeof(program)) ? program[i] : 0;
+        if(i < REG_LENGTH) reg[i] = 0;
+        mem[i] = (i < sizeof(program) / sizeof(int32)) ? program[i] : 0;
     }
     
     vmem[1999] = 1;
@@ -112,6 +112,8 @@ void entry(void) {
             reg[mem[pc - 1]] = vmem[mem[pc - 2]];
             break;
         case -7: /* LD */
+            if(mem[pc - 2] == 1)
+                get_key();
             reg[mem[pc - 1]] = reg[mem[pc - 2]];
             break;
         case -8: /* ISV */
