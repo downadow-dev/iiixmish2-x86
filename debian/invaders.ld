@@ -11,7 +11,7 @@
  *
  */
 
-/* [03/09/25] ``.text 64M``,      --downadow */
+/* [03/09/25, 03/10/25] change SECTIONS;      --downadow */
 
 PHDRS
 {
@@ -21,7 +21,7 @@ PHDRS
 
 SECTIONS
 {
-	.text 64M :
+	.text 4M :
 	{
 		*(.text*)
 		*(.rodata*)
