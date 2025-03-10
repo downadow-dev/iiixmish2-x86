@@ -1,6 +1,6 @@
 /*  iiixmish2-x86 -- the iiixmish2 emulator
     See COPYING file for license text.
-    Copyright (C) 2025  Menshikov Sviatoslav Segreevich
+    Copyright (C) 2025  Menshikov Sviatoslav Sergeevich
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
