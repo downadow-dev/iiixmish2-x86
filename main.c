@@ -124,7 +124,7 @@ void entry(void) {
             reg[mem[pc - 1]] = mem[pc - 2];
             break;
         case -5: /* ILD */
-            if(pc > 65535 && mem[pc - 2] < 65536)
+            if(pc > 65535 && (mem[pc - 2] < 65536 || mem[pc - 2] >= 9999872))
                 break; /* memory protection */
             reg[mem[pc - 1]] = mem[mem[pc - 2]];
             break;
@@ -137,7 +137,7 @@ void entry(void) {
             reg[mem[pc - 1]] = reg[mem[pc - 2]];
             break;
         case -8: /* ISV */
-            if(pc > 65535 && mem[pc - 1] < 65536)
+            if(pc > 65535 && (mem[pc - 1] < 65536 || (mem[pc - 1] >= 9999000 && mem[pc - 1] < 9999100)))
                 break; /* memory protection */
             if(mem[pc - 2] == 1)
                 get_key();
@@ -278,7 +278,7 @@ void entry(void) {
             timer = 0;
             break;
         case -45: /* RISV */
-            if(pc > 65535 && reg[mem[pc - 1]] < 65536)
+            if(pc > 65535 && (reg[mem[pc - 1]] < 65536 || (reg[mem[pc - 1]] >= 9999000 && reg[mem[pc - 1]] < 9999100)))
                 break; /* memory protection */
             if(mem[pc - 1] == 1 || mem[pc - 2] == 1)
                 get_key();
@@ -290,7 +290,7 @@ void entry(void) {
             vmem[reg[mem[pc - 1]]] = reg[mem[pc - 2]];
             break;
         case -47: /* RILD */
-            if(pc > 65535 && reg[mem[pc - 2]] < 65536)
+            if(pc > 65535 && (reg[mem[pc - 2]] < 65536 || reg[mem[pc - 2]] >= 9999872))
                 break; /* memory protection */
             if(mem[pc - 1] == 1 || mem[pc - 2] == 1)
                 get_key();
