@@ -76,7 +76,10 @@ static void draw(void) {
     
     for(int y = 0; y < 25; y++) {
         for(int x = 63; x < 80 && i < 1890; x++, i++) {
-            if(vmem[i] != 0) {
+            if(vmem[i] >= 255 && vmem[i] < 265)
+                vmem[1999] = vmem[i] - 255;
+            else if(vmem[i] != 0) {
+                video_usecolor(real_color((uint8)vmem[1999]), real_color((uint8)vmem[1998]));
                 video_putchar(x, y, (vmem[i] == 9608) ? 219 : (uint8)vmem[i]);
             }
         }
