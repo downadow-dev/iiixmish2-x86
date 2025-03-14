@@ -105,6 +105,7 @@ void entry(void) {
     vmem[1998] = 0;
     
     video_hidecursor();
+    timer_reset();
     
     for(int pc = 0; pc < MEM_LENGTH; pc++) {
         switch(mem[pc]) {
