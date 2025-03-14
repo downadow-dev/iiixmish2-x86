@@ -31,7 +31,7 @@
 static int32 mem[MEM_LENGTH];
 static uint16 vmem[VMEM_LENGTH];
 static int32 reg[REG_LENGTH];
-static uint32 timer = 0, count = 0;
+static uint32 timer = 0;
 
 static uint8 real_color(uint8 xm2_color) {
     switch(xm2_color) {
@@ -50,6 +50,9 @@ static void get_key(void) {
     uint8 c;
     bool pressed;
     
+    timer += 0xFFFF - timer_read();
+    timer_reset();
+    
     key_polling();
     key_decode(&c, &pressed);
     if(pressed && (c = char_decode(c)) != 0) {
@@ -58,6 +61,9 @@ static void get_key(void) {
 }
 
 static void draw(void) {
+    timer += 0xFFFF - timer_read();
+    timer_reset();
+    
     video_usecolor(real_color((uint8)vmem[1999]), real_color((uint8)vmem[1998]));
     video_fill(0, 0, 80, 25, ' ');
     
@@ -99,16 +105,8 @@ void entry(void) {
     vmem[1998] = 0;
     
     video_hidecursor();
-    draw();
     
-    for(int pc = 0; pc < MEM_LENGTH; pc++, count++) {
-        if(count > 1000000) {
-            delay_wait(50 * (SEC / 1000));
-            timer += 50 * (SEC / 1000);
-            timer_reset();
-            count = 0;
-        }
-        
+    for(int pc = 0; pc < MEM_LENGTH; pc++) {
         switch(mem[pc]) {
         case -2: /* ADD */
             if(mem[pc - 2] == 1 || mem[pc - 3] == 1)
@@ -161,32 +159,52 @@ void entry(void) {
                 break; /* code protection */
             if(mem[pc - 1] == 1 || mem[pc - 2] == 1 || mem[pc - 3] == 1)
                 get_key();
-            if(reg[mem[pc - 1]] == reg[mem[pc - 2]])
+            if(reg[mem[pc - 1]] == reg[mem[pc - 2]]) {
+                if(reg[mem[pc - 3]] <= pc) {
+                    timer += 0xFFFF - timer_read();
+                    timer_reset();
+                }
                 pc = reg[mem[pc - 3]] - 1;
+            }
             break;
         case -12: /* IFB */
             if(pc > 65535 && reg[mem[pc - 3]] < 65536)
                 break; /* code protection */
             if(mem[pc - 1] == 1 || mem[pc - 2] == 1 || mem[pc - 3] == 1)
                 get_key();
-            if(reg[mem[pc - 1]] != reg[mem[pc - 2]])
+            if(reg[mem[pc - 1]] != reg[mem[pc - 2]]) {
+                if(reg[mem[pc - 3]] <= pc) {
+                    timer += 0xFFFF - timer_read();
+                    timer_reset();
+                }
                 pc = reg[mem[pc - 3]] - 1;
+            }
             break;
         case -13: /* IFC */
             if(pc > 65535 && reg[mem[pc - 3]] < 65536)
                 break; /* code protection */
             if(mem[pc - 1] == 1 || mem[pc - 2] == 1 || mem[pc - 3] == 1)
                 get_key();
-            if(reg[mem[pc - 1]] > reg[mem[pc - 2]])
+            if(reg[mem[pc - 1]] > reg[mem[pc - 2]]) {
+                if(reg[mem[pc - 3]] <= pc) {
+                    timer += 0xFFFF - timer_read();
+                    timer_reset();
+                }
                 pc = reg[mem[pc - 3]] - 1;
+            }
             break;
         case -14: /* IFD */
             if(pc > 65535 && reg[mem[pc - 3]] < 65536)
                 break; /* code protection */
             if(mem[pc - 1] == 1 || mem[pc - 2] == 1 || mem[pc - 3] == 1)
                 get_key();
-            if(reg[mem[pc - 1]] < reg[mem[pc - 2]])
+            if(reg[mem[pc - 1]] < reg[mem[pc - 2]]) {
+                if(reg[mem[pc - 3]] <= pc) {
+                    timer += 0xFFFF - timer_read();
+                    timer_reset();
+                }
                 pc = reg[mem[pc - 3]] - 1;
+            }
             break;
         case -15: /* UPDD */
             draw();
@@ -194,8 +212,11 @@ void entry(void) {
         case -16: /* OFF */
             if(pc < 65536)
                 return;
-            else
+            else {
+                timer += 0xFFFF - timer_read();
+                timer_reset();
                 pc = 32767;
+            }
             break;
         case -17: /* VRST */
             for(int i = 0; i < 1890; i++)
@@ -206,6 +227,10 @@ void entry(void) {
                 break; /* code protection */
             if(mem[pc - 1] == 1)
                 get_key();
+            if(reg[mem[pc - 1]] <= pc) {
+                timer += 0xFFFF - timer_read();
+                timer_reset();
+            }
             pc = reg[mem[pc - 1]] - 1;
             break;
         case -21: /* MUL */
@@ -302,8 +327,6 @@ void entry(void) {
             reg[mem[pc - 1]] = vmem[reg[mem[pc - 2]]];
             break;
         }
-        
-        if(count >= 1000000) timer += 0xFFFF - timer_read();
     }
 }
 
