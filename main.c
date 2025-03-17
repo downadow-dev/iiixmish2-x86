@@ -145,7 +145,7 @@ void entry(void) {
             break;
         case -10: /* SLP */
             time_end = get_tsc() + (reg[mem[pc - 1]] * (clks_per_msec * 1000));
-            while(get_tsc() < time_end);
+            do __builtin_ia32_pause(); while(get_tsc() < time_end);
             break;
         case -11: /* IFA */
             if(pc > 65535 && reg[mem[pc - 3]] < 65536)
@@ -211,7 +211,7 @@ void entry(void) {
             break;
         case -23: /* LSLP */
             time_end = get_tsc() + (reg[mem[pc - 1]] * clks_per_msec);
-            while(get_tsc() < time_end);
+            do __builtin_ia32_pause(); while(get_tsc() < time_end);
             break;
         case -26: /* INC */
             if(mem[pc - 1] == 1)
