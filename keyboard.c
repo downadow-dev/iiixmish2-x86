@@ -1,5 +1,6 @@
 /*
   [03/06/25] key_decode() changed
+  [03/18/25] *key='\0'
   --downadow
  */
 
@@ -16,7 +17,7 @@ void key_decode(uint8 *key, bool *pressed)
   uint8 c;
   uint32 ringoldstart = ringstart;
 
-  *key='x';
+  *key='\0';
   *pressed=false;
     
   if (ringstart == ringend) return;
