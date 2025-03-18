@@ -22,7 +22,7 @@
 
 #include "types.h"
 
-uint8 char_decode(uint8 key);
+uint8 char_decode(void);
 
 #endif
 

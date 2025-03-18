@@ -48,11 +48,8 @@ static uint8 real_color(uint8 xm2_color) {
 
 static void get_key(void) {
     uint8 c;
-    bool pressed;
     
-    key_polling();
-    key_decode(&c, &pressed);
-    if(pressed && (c = char_decode(c)) != 0) {
+    if((c = char_decode()) != 0) {
         reg[1] = c;
     }
 }
