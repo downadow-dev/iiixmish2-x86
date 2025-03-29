@@ -102,6 +102,9 @@ void entry(void) {
     
     for(int pc = 0; pc < MEM_LENGTH; pc++) {
         switch(mem[pc]) {
+        case -1: /* NOP */
+            reg[0] = reg[0] - 1 + 2 / 2;
+            break;
         case -2: /* ADD */
             if(mem[pc - 2] == 1 || mem[pc - 3] == 1)
                 get_key();
@@ -139,10 +142,6 @@ void entry(void) {
             if(mem[pc - 2] == 1)
                 get_key();
             vmem[mem[pc - 1]] = reg[mem[pc - 2]];
-            break;
-        case -10: /* SLP */
-            time_end = get_tsc() + (reg[mem[pc - 1]] * (clks_per_msec * 1000));
-            do __builtin_ia32_pause(); while(get_tsc() < time_end);
             break;
         case -11: /* IFA */
             if(pc > 65535 && reg[mem[pc - 3]] < 65536)
@@ -205,10 +204,6 @@ void entry(void) {
             if(mem[pc - 2] == 1 || mem[pc - 3] == 1)
                 get_key();
             reg[mem[pc - 1]] = reg[mem[pc - 2]] / reg[mem[pc - 3]];
-            break;
-        case -23: /* LSLP */
-            time_end = get_tsc() + (reg[mem[pc - 1]] * clks_per_msec);
-            do __builtin_ia32_pause(); while(get_tsc() < time_end);
             break;
         case -26: /* INC */
             if(mem[pc - 1] == 1)
