@@ -31,7 +31,7 @@
 static int32 mem[MEM_LENGTH];
 static uint16 vmem[VMEM_LENGTH];
 static int32 reg[REG_LENGTH];
-static uint64 time_start, time_end;
+static uint64 time_start;
 
 static uint8 real_color(uint8 xm2_color) {
     switch(xm2_color) {
