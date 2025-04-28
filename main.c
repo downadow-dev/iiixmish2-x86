@@ -142,6 +142,13 @@ void entry(void) {
                 get_key();
             vmem[mem[pc - 1] & 0x7FF] = reg[mem[pc - 2] & 0x3F];
             break;
+        case -10: /* CALL */
+            if(pc > 65535 && mem[pc - 2] < 65536)
+                break; /* code protection */
+            if((mem[pc - 1] & 0x3F) != 0)
+                reg[mem[pc - 1] & 0x3F] = pc + 1;
+            pc = mem[pc - 2] - 1;
+            break;
         case -11: /* IFA */
             if(pc > 65535 && reg[mem[pc - 3] & 0x3F] < 65536)
                 break; /* code protection */
