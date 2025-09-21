@@ -1,0 +1,239 @@
+invaders (1.0.0-15) unstable; urgency=medium
+
+  * Improvements to the linker script:
+    + Rename  to debian/invaders.ld.
+    + Add a PROVIDE rule to enable linking on platforms with
+      underscore-prefixed assembly symbol names.
+    + Link more sections into the ELF binary.
+  * Override dh_dwz with an empty rule.
+
+ -- Fabian Greffrath <fabian@debian.org>  Mon, 20 Jul 2020 21:12:41 +0200
+
+invaders (1.0.0-14) unstable; urgency=medium
+
+  * Update Uploaders field to my Debian address.
+  * Bump debhelper-compat to 13.
+  * Bump Standards-Version to 4.5.0.
+  * Update Vcs-* fields to point to the Salsa GIT repository.
+  * Add "Enhances: grub2-common" relationship, as we call update-grub2
+    in the maintainer scripts.
+  * Add "Suggests: qemu-system-x86" relationship, as it is possible to
+    run the game directly in QEMU.
+  * 01-misspelling-loose.patch: Improve word spacing.
+  * 04-change-colors.patch: Reset colors when game is restarted.
+  * Add a minimal linker script to fix FTBFS ("PHDR segment not
+    covered by LOAD segment") with current binutils (see #958525).
+  * 06-speed-up.patch: New patch, speed up alien ships up to about
+    factor 2 when all are destroyed.
+  * 02-build-flags.patch: Add "-fno-stack-protector" to CFLAGS for
+    compilers that default to this build flag.
+  * 02-build-flags.patch: Remove "-W" from CFLAGS to silence a useless
+    warning.
+  * Do not call dh_strip at all, we do not want a -dbgsym package
+    anyway.
+  * Only call update-grub2 in maintainer scripts if
+    /boot/grub/grub.cfg already exists (LP: #1876411).
+  * Add a README.Debian file to document that Secure Boot needs to be
+    disabled (see #958894) and how to run the game in QEMU.
+
+ -- Fabian Greffrath <fabian@debian.org>  Sat, 09 May 2020 12:30:17 +0200
+
+invaders (1.0.0-13) unstable; urgency=low
+
+  [ Evgeni Golov ]
+  * Correct Vcs-* URLs to point to anonscm.debian.org
+
+  [ Fabian Greffrath ]
+  * Fix ftbfs with GCC-5 (Closes: #777915).
+    + 02-static-inline.patch: Declare ins##s() and outs##s() as
+      "static inline" as well.
+    + 03-reboot-on-esc.patch: Declare reboot() as "static inline",
+      since it calls outb() which is static inline itself.
+  * Fix unversioned debian/copyright format URI.
+  * Bump Standards-Version and remove obsolete DM-Upload-Allowed field.
+  * Bump debhelper compat level to 9.
+
+ -- Fabian Greffrath <fabian+debian@greffrath.com>  Mon, 27 Apr 2015 10:22:14 +0200
+
+invaders (1.0.0-12) unstable; urgency=low
+
+  [ Fabian Greffrath ]
+  * Split 01-pointer-targets-differ-in-signedness.patch into two separate
+    patches: 01-misspelling-loose.patch and 01-uint8-char.patch.
+  * Rename 02-gcc-ldflags.patch to 02-build-flags.patch, clean up CFLAGS
+    and LDFLAGS a bit (we don't need -m32 twice) and replace -Werror with -W.
+  * 02-static-inline.patch: Replace "extern inline" with "static inline" in
+    io.h to allow for non-optimized builds.
+  * 04-change-colors.patch: Use PgUp and PgDown to toggle through the color
+    palette and use a secret key to toggle "psychedelic mode". ;)
+  * 05-pause.patch: Use "P" to pause and resume.
+  * Add DEP-3 compliant headers to all patches.
+  * Make debian/copyright DEP-5 compliant and update Debian packaging license.
+  * Update Standards-Version to 3.9.2.
+  * Set Architecture to "any-i386 any-amd64" instead of a hard-coded list.
+
+ -- Stefan Potyra <sistpoty@ubuntu.com>  Tue, 01 Nov 2011 14:12:46 +0100
+
+invaders (1.0.0-11) unstable; urgency=low
+
+  [ Fabian Greffrath ]
+  * Refreshed all patches.
+  * debian/patches/03-reboot-on-esc.patch: Only reboot when the ESC key
+    is pressed in-game, not during the GAME OVER screen.
+  * Relaxed debhelper build-dependency a bit.
+  * Updated my email address.
+  * Removed spurious removal of an obsoleted config file.
+  * Converted packaging to source format "3.0 (quilt)".
+
+  [ Stefan Potyra ]
+  * Add myself to uploaders.
+
+  [ Fabian Greffrath ]
+  * Set DM-Upload-Allowed: yes.
+
+ -- Fabian Greffrath <fabian+debian@greffrath.com>  Tue, 22 Dec 2009 08:52:16 +0100
+
+invaders (1.0.0-10) unstable; urgency=low
+
+  [ Stefan Potyra ]
+  * Fix build failures if stack-protector is enabled by default,
+    thanks to Kees Cook for the patches:
+    + rename debian/patches/02-amd64.patch to 02-gcc-ldflags.patch
+    + move -nostdlib to CFLAGS, as it's a compiler flag
+    + use CFLAGS for linking as well (since gcc is used)
+
+  [ Fabian Greffrath ]
+  * debian/patches/02-gcc-ldflags.patch: Replace -fno-builtin with
+    -ffreestanding, the latter implies the former and is even stricter.
+  * debian/patches/03-reboot-on-esc.patch: New patch, perform a reboot
+    when the ESC key is pressed. Relies on the keyboard controller available
+    at port 0x64 (just as the whole game does anyway).
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Fri, 13 Nov 2009 13:44:59 +0100
+
+invaders (1.0.0-9) unstable; urgency=low
+
+  [ Fabian Greffrath ]
+  * debian/clean, debian/grub-invaders.{docs,examples,install}:
+    + Added.
+  * debian/compat:
+    + Raised debhelper compatibility to 7.
+  * debian/control:
+    + Changed Section from misc to kernel.
+    + Raised Build-Depends to debhelper (>= 7.2) and quilt (>= 0.46-7).
+    + Bumped Standards-Version to 3.8.3.
+    + Removed spurious Suggests on grub2.
+  * debian/copyright:
+    + Converted into a machine-readable format.
+    + Adjusted license for io.h to GPL-2 (not GPL-2+).
+    + Relicensed the Debian packaging under the GNU All-Permissive License.
+  * debian/examples/grub-menu.lst, debian/scripts/22_invaders:
+    + Use the original filename "invaders.exec" instead of "invaders".
+  * debian/grub-invaders.post{inst,rm}:
+    + Renamed from post{inst,rm}.
+  * debian/patches/:
+    + Switched from dpatch to quilt for patch management.
+    + Applied fixes from Carl-Daniel Hailfinger
+      <c-d.hailfinger.devel.2006 at gmx.net> found at
+      <http://www.coreboot.org/pipermail/coreboot/2009-April/046558.html>:
+  * debian/patches/01-pointer-targets-differ-in-signedness.dpatch:
+    + Use (char *) instead of (uint8 *).
+  * debian/patches/02-amd64.dpatch:
+    + Fix incompatibility with newer gcc and binutils.
+  * debian/rules:
+    + Converted to debhelper 7.2.
+    + Improved stripping.
+  * debian/scripts/22_invaders:
+    + Renamed from debian/scripts/grub.
+    + Use grub-mkconfig_lib instead of the deprecated update-grub_lib
+      (Closes: #539947). Thanks Didier 'OdyX' Raboud.
+
+  [ Evgeni Golov ]
+  * debian/README.source:
+    + Added a short note on where to get info about quilt.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Thu, 20 Aug 2009 20:31:38 +0200
+
+invaders (1.0.0-8) unstable; urgency=low
+
+  * debian/control:
+    + Set Maintainer to Debian Games Team and added myself to Uploaders.
+    + Added Vcs-Svn and Vcs-Browser fields.
+    + Bumped Suggests to 'grub2 (>= 1.96+20080531-1)'.
+  * debian/patches/01-pointer-targets-differ-in-signedness.dpatch:
+    + Fixed misspelling: "YOU LOOSE" should be "YOU LOSE" (Closes: #478928).
+      Thanks Daniel Kahn Gillmor <dkg-debian.org@fifthhorseman.net>.
+  * debian/scripts/grub:
+    + Fixed to use functions out of /usr/lib/grub/update-grub_lib instead of
+      ${GRUB_DRIVE_BOOT} (Closes: #492267). Thanks
+      Justin B Rye <jbr@edlug.org.uk>.
+    + Added a missing "prepare_grub_to_access_device ${GRUB_DEVICE_BOOT}"
+      call. Without it, it could break if /boot/ is in a different device than
+      whatever came before invaders. Thanks Robert Millan <rmh@aybabtu.com>.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Fri,  1 Aug 2008 14:44:00 +0100
+
+invaders (1.0.0-7) unstable; urgency=low
+
+  * debian/postinst:
+    + Remove forgotten config file `/etc/grub.d/20_invaders'
+      before running update-grub2.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Sun, 10 Feb 2008 15:30:00 +0100
+
+invaders (1.0.0-6) unstable; urgency=low
+
+  * debian/control:
+    + Changed Suggests to 'grub2 (>= 1.95+20080116-1)'.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Sun, 27 Jan 2008 20:15:00 +0100
+
+invaders (1.0.0-5) unstable; urgency=low
+
+  * debian/control:
+    + Bumped Standards-Version to 3.7.3.
+    + Added Homepage: field.
+    + Added 'Depends: ${misc:Depends}'.
+    + Added 'Suggests: grub2 (>= 1.95+20081116-1)'.
+    + Removed Recommends.
+  * debian/postinst, debian/postrm:
+    + Use update-grub2 instead of update-grub (Closes: #460078).
+  * debian/rules:
+    + Install debian/scripts/grub to '/etc/grub.d/22_invaders'.
+  * debian/scripts/grub:
+    + Synced with memtest86 (3.4-1) packaging.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Wed, 23 Jan 2008 10:00:00 +0100
+
+invaders (1.0.0-4) unstable; urgency=low
+
+  * Support /boot on separate partition (Closes: #424928).
+    Thanks, Paul Martin <pm@debian.org>!
+  * Support stripping of the binary file /boot/invaders.
+  * Recommends: grub2 (>= 1.95+20070515-1) | grub.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Fri, 18 May 2007 14:55:00 +0100
+
+invaders (1.0.0-3) unstable; urgency=low
+
+  * Fix bogus postrm.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Sun, 13 May 2007 15:08:00 +0100
+
+invaders (1.0.0-2) unstable; urgency=low
+
+  * Install ELF image, not a.out (Closes: #422366).
+    Thanks, Robert Millan <rmh@aybabtu.com>!
+  * Add support for building on amd64 (Closes: #422364).
+    Thanks again, Robert Millan <rmh@aybabtu.com>!
+  * Provide /etc/grub.d/20_invaders and run update-grub in postinst/-rm
+    (Closes: #417030). Thanks again, Robert Millan <rmh@aybabtu.com>!
+  * Recommends: grub2 (>= 1.95+20070505-1) | grub.
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Sat,  5 May 2007 15:22:00 +0100
+
+invaders (1.0.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #415955).
+
+ -- Fabian Greffrath <fabian@debian-unofficial.org>  Fri, 23 Mar 2007 09:46:00 +0100
